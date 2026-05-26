@@ -1,0 +1,16 @@
+{
+  "name": "braintracker",
+  "version": "1.0.0",
+  "description": "Claude Code plugin that logs every skill invocation with duration and triggering prompt",
+  "bin": {
+    "braintracker": "bin/braintracker.js"
+  },
+  "files": [
+    "bin/",
+    "braintracker/hooks/"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
