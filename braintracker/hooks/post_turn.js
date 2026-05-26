@@ -10,18 +10,23 @@ process.stdin.on('end', () => {
   try { payload = JSON.parse(raw); } catch { process.exit(0); }
 
   const sessionId = payload.session_id;
+  if (!sessionId) process.exit(0);
+
   const prj = path.basename(process.cwd());
   const cacheDir = path.join(os.homedir(), '.claude', 'plugin', 'cache', 'braintracker', prj);
-  const preFile = path.join(cacheDir, `${sessionId}.turn.pre.json`);
+  fs.mkdirSync(cacheDir, { recursive: true });
 
+  let messages = [];
+  try {
+    if (payload.transcript_path) {
+      messages = fs.readFileSync(payload.transcript_path, 'utf8')
+        .trim().split('\n').map(l => JSON.parse(l));
+    }
+  } catch { /* transcript unavailable */ }
+
+  const preFile = path.join(cacheDir, `${sessionId}.turn.pre.json`);
   let preData;
   try { preData = JSON.parse(fs.readFileSync(preFile, 'utf8')); } catch { process.exit(0); }
-
-  const transcript = payload.transcript || [];
-
-  // overwrite transcript file with full conversation on every turn
-  const transcriptFile = path.join(cacheDir, `${sessionId}.transcript.json`);
-  fs.writeFileSync(transcriptFile, JSON.stringify(transcript, null, 2));
 
   const entry = {
     type: 'conversation_turn',
@@ -29,6 +34,7 @@ process.stdin.on('end', () => {
     user_prompt: preData.prompt,
     started_at: new Date(preData.start_time).toISOString(),
     duration_seconds: (Date.now() - preData.start_time) / 1000,
+    messages,
   };
 
   const logFile = path.join(cacheDir, `${sessionId}.jsonl`);
