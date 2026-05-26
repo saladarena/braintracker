@@ -52,9 +52,20 @@ Each line is a JSON object:
 
 ## How It Works
 
+Two capture paths cover all skill invocations:
+
+**Slash commands** (user types `/skill-name`):
+
+| Hook | Script | Action |
+|------|--------|--------|
+| `UserPromptSubmit` | `pre_prompt.js` | Detects `/skill-name` in the prompt, writes `<session>.prompt.pre.json` |
+| `Stop` | `post_prompt.js` | Reads the snapshot, computes duration, appends a log entry, deletes the snapshot |
+
+**Mid-conversation tool calls** (Claude calls `Skill(...)` explicitly):
+
 | Hook | Script | Action |
 |------|--------|--------|
 | `PreToolUse` (Skill) | `pre_skill.js` | Writes a timing snapshot to `<session>.pre.json` |
-| `PostToolUse` (Skill) | `post_skill.js` | Reads the snapshot, computes duration, appends a log entry to `<session>.jsonl`, deletes the snapshot |
+| `PostToolUse` (Skill) | `post_skill.js` | Reads the snapshot, computes duration, appends a log entry, deletes the snapshot |
 
 Logs live at `~/.claude/plugin/cache/braintracker/<project>/` — one JSONL file per session, grouped by project name.
