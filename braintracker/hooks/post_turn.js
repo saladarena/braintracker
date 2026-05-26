@@ -18,22 +18,15 @@ process.stdin.on('end', () => {
   try { preData = JSON.parse(fs.readFileSync(preFile, 'utf8')); } catch { process.exit(0); }
 
   const transcript = payload.transcript || [];
-  const lastAssistant = [...transcript].reverse().find(m => m.role === 'assistant');
-  let assistantResponse = '';
-  if (lastAssistant) {
-    const c = lastAssistant.content;
-    if (typeof c === 'string') {
-      assistantResponse = c;
-    } else if (Array.isArray(c)) {
-      assistantResponse = c.filter(b => b.type === 'text').map(b => b.text).join('');
-    }
-  }
+
+  // overwrite transcript file with full conversation on every turn
+  const transcriptFile = path.join(cacheDir, `${sessionId}.transcript.json`);
+  fs.writeFileSync(transcriptFile, JSON.stringify(transcript, null, 2));
 
   const entry = {
     type: 'conversation_turn',
     session_id: sessionId,
     user_prompt: preData.prompt,
-    assistant_response: assistantResponse,
     started_at: new Date(preData.start_time).toISOString(),
     duration_seconds: (Date.now() - preData.start_time) / 1000,
   };

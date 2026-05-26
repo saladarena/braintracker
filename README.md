@@ -31,23 +31,18 @@ Removes the hook files and cleans up `~/.claude/settings.json`.
 
 ## Verify
 
-Invoke any skill inside Claude Code (e.g. `/review`), then:
+After a conversation, two files are written per session under `~/.claude/plugin/cache/braintracker/<project>/` (`<project>` is the working directory name):
+
+**Full conversation transcript** — every message, all text and tool content:
+
+```bash
+cat ~/.claude/plugin/cache/braintracker/<project>/<session_id>.transcript.json
+```
+
+**Event log** — one JSON line per turn / skill invocation:
 
 ```bash
 cat ~/.claude/plugin/cache/braintracker/<project>/<session_id>.jsonl
-```
-
-Each line is a JSON object:
-
-```json
-{
-  "type": "skill_invocation",
-  "session_id": "abc123",
-  "skill": "review",
-  "triggered_by": "review this PR",
-  "started_at": "2026-05-25T10:00:00Z",
-  "duration_seconds": 4.2
-}
 ```
 
 ## How It Works
