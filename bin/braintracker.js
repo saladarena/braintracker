@@ -10,6 +10,8 @@ const PRE_CMD         = `node ${path.join(DEST_HOOKS, 'pre_skill.js')}`;
 const POST_CMD        = `node ${path.join(DEST_HOOKS, 'post_skill.js')}`;
 const PRE_PROMPT_CMD  = `node ${path.join(DEST_HOOKS, 'pre_prompt.js')}`;
 const POST_PROMPT_CMD = `node ${path.join(DEST_HOOKS, 'post_prompt.js')}`;
+const PRE_TURN_CMD    = `node ${path.join(DEST_HOOKS, 'pre_turn.js')}`;
+const POST_TURN_CMD   = `node ${path.join(DEST_HOOKS, 'post_turn.js')}`;
 
 function readSettings() {
   try { return JSON.parse(fs.readFileSync(SETTINGS, 'utf8')); } catch { return {}; }
@@ -44,7 +46,7 @@ function removeHook(arr, command) {
 function install() {
   const SRC_HOOKS = path.join(__dirname, '..', 'braintracker', 'hooks');
   fs.mkdirSync(DEST_HOOKS, { recursive: true });
-  for (const file of ['pre_skill.js', 'post_skill.js', 'pre_prompt.js', 'post_prompt.js']) {
+  for (const file of ['pre_skill.js', 'post_skill.js', 'pre_prompt.js', 'post_prompt.js', 'pre_turn.js', 'post_turn.js']) {
     fs.copyFileSync(path.join(SRC_HOOKS, file), path.join(DEST_HOOKS, file));
   }
 
@@ -57,7 +59,9 @@ function install() {
   addHook(settings.hooks.PreToolUse,       'Skill', PRE_CMD);
   addHook(settings.hooks.PostToolUse,      'Skill', POST_CMD);
   addHook(settings.hooks.UserPromptSubmit, null,    PRE_PROMPT_CMD);
+  addHook(settings.hooks.UserPromptSubmit, null,    PRE_TURN_CMD);
   addHook(settings.hooks.Stop,             null,    POST_PROMPT_CMD);
+  addHook(settings.hooks.Stop,             null,    POST_TURN_CMD);
   writeSettings(settings);
 
   console.log('braintracker installed.');
@@ -72,7 +76,9 @@ function uninstall() {
     settings.hooks.PreToolUse       = removeHook(settings.hooks.PreToolUse,       PRE_CMD);
     settings.hooks.PostToolUse      = removeHook(settings.hooks.PostToolUse,      POST_CMD);
     settings.hooks.UserPromptSubmit = removeHook(settings.hooks.UserPromptSubmit, PRE_PROMPT_CMD);
+    settings.hooks.UserPromptSubmit = removeHook(settings.hooks.UserPromptSubmit, PRE_TURN_CMD);
     settings.hooks.Stop             = removeHook(settings.hooks.Stop,             POST_PROMPT_CMD);
+    settings.hooks.Stop             = removeHook(settings.hooks.Stop,             POST_TURN_CMD);
   }
   writeSettings(settings);
 
@@ -85,7 +91,9 @@ function disable() {
     settings.hooks.PreToolUse       = removeHook(settings.hooks.PreToolUse,       PRE_CMD);
     settings.hooks.PostToolUse      = removeHook(settings.hooks.PostToolUse,      POST_CMD);
     settings.hooks.UserPromptSubmit = removeHook(settings.hooks.UserPromptSubmit, PRE_PROMPT_CMD);
+    settings.hooks.UserPromptSubmit = removeHook(settings.hooks.UserPromptSubmit, PRE_TURN_CMD);
     settings.hooks.Stop             = removeHook(settings.hooks.Stop,             POST_PROMPT_CMD);
+    settings.hooks.Stop             = removeHook(settings.hooks.Stop,             POST_TURN_CMD);
   }
   writeSettings(settings);
   console.log('braintracker disabled. Hook files kept. Run "npx braintracker enable" to re-enable.');
@@ -106,7 +114,9 @@ function enable() {
   addHook(settings.hooks.PreToolUse,       'Skill', PRE_CMD);
   addHook(settings.hooks.PostToolUse,      'Skill', POST_CMD);
   addHook(settings.hooks.UserPromptSubmit, null,    PRE_PROMPT_CMD);
+  addHook(settings.hooks.UserPromptSubmit, null,    PRE_TURN_CMD);
   addHook(settings.hooks.Stop,             null,    POST_PROMPT_CMD);
+  addHook(settings.hooks.Stop,             null,    POST_TURN_CMD);
   writeSettings(settings);
 
   console.log('braintracker enabled.');

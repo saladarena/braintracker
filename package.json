@@ -1,6 +1,6 @@
 {
   "name": "braintracker",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Claude Code plugin that logs every skill invocation with duration and triggering prompt",
   "bin": {
     "braintracker": "bin/braintracker.js"
